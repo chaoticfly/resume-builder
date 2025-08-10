@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* keep your light background like the canvas */
+html, body, #root { height: 100%; }
+body { background: #fff; color: #0f172a; }
