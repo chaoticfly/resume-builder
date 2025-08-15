@@ -1,174 +1,16 @@
 import React, { useMemo, useRef, useState } from "react";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, PageOrientation } from "docx";
+// ADD THESE
+import ResumeEditor from "./ResumeEditor";
+import { useResume } from "./useResume";
+import { LocalStorageStorage } from "./storage";
+import type { Resume } from "./types";
 
+import resumeJson from './data/resume.json';
 // --- Single Source of Truth --------------------------------------------------
 // You can edit this JSON, or click "Import JSON" to load your own.
 // Keep the structure; exports (PDF/DOCX) are generated from this one object.
-const initialData = {
-  basics: {
-    name: "K. Shyam Prakash",
-    headline: "Architecture, AI and UI Development",
-    email: "sparks.ks@gmail.com",
-    phone: "+91 9886982646",
-    location: "Bengaluru, India",
-    website: "http://chaoticfly.in",
-    profiles: [
-      { network: "LinkedIn", username: "prakashshyam", url: "https://www.linkedin.com/in/prakashshyam" }
-    ],
-  },
-  // Layout/Page-break metadata lives here and round-trips with JSON
-  layout: {
-    breaks: {
-      before: {
-        summary: false,
-        skills: false,
-        experience: false,
-        projects: false,
-        education: false,
-        languages: false,
-      },
-      // Add a break before specific experience indices (e.g., [2, 4])
-      beforeExperience: [] as number[],
-    },
-  },
-  summary: [
-    "20+ years at SAP Labs, Degreed, and more; architecting and delivering complex, full‑stack solutions.",
-    "AI/LLM integration: built production RAG pipelines, vector search, and chatbots using LangChain and LlamaIndex.",
-    "Models: OpenAI plus locally hosted Llama and Gemma; pragmatic, cost‑aware deployments.",
-    "Cloud & DevOps: architected multi‑cloud (AWS, Azure, GCP) microservices with Kubernetes, Docker, Terraform.",
-    "JavaScript & UI: expert front‑end (React, Angular); U.S. patent for innovative UI design; user‑centric UX.",
-  ],
-  skills: [
-    { name: "Architecture", keywords: ["Backend", "Frontend", "Cloud"] },
-    { name: "Frontend", keywords: ["React", "Angular", "JavaScript", "HTML/CSS"] },
-    { name: "DevOps", keywords: ["Azure", "GCP", "Kubernetes", "Docker", "Linux scripting"] },
-    { name: "AI & RAG", keywords: ["Vector search", "Graph RAG", "Prompting", "Ollama", "ONNX"] },
-    { name: "Node", keywords: ["Express", "Deno", "Bun"] },
-    { name: "Python", keywords: ["FastAPI", "Django", "Pandas"] },
-    { name: ".NET", keywords: ["ASP.NET", "Blazor"] },
-    { name: "Java", keywords: ["JEE", "POJOs", "Grails", "Kotlin"] },
-  ],
-  experience: [
-    {
-      company: "Degreed India",
-      title: "Architect",
-      location: "Bengaluru",
-      start: "Dec 2023",
-      end: "Present",
-      bullets: [
-        "Architected AI‑driven support automation with vector search + LLMs; reduced duplicate tickets ~30% and triage time ~25%.",
-        "Productionized RAG pipelines over JIRA and Zendesk with LangChain/LlamaIndex; de‑duplication, NLQ for escalations, prompt/guardrail patterns, and an offline evaluation harness.",
-        "Built a multi‑tenant embeddings + retrieval service (OpenAI plus local llama.cpp/Gemma) behind feature flags; optimized token usage and latency for cost‑aware inference.",
-        "Defined SLOs (e.g., P95 first‑response latency, answer confidence) and instrumented the stack with OpenTelemetry; shipped dashboards and alerting for product/ops.",
-        "Contributed to Angular migration and a Design‑System; improved accessibility and page‑load KPIs across key flows."
-      ],
-    },
-    {
-      company: "SymphonyAI",
-      title: "Senior Architect",
-      location: "Bengaluru",
-      start: "Apr 2021",
-      end: "Nov 2023",
-      bullets: [
-        "Built an internal low‑code platform (Django, React, Redis, K8s) that productized data‑science apps; reduced time‑to‑first‑app from weeks to days.",
-        "Introduced GitOps (Argo CD) and IaC (Terraform modules with remote state) across dev/stage/prod; published golden CI/CD templates (GitHub Actions) with tests, SBOM and image signing; automated rollbacks.",
-        "Designed FastAPI microservices for ingestion/serving; background jobs with Celery; multi‑tenant auth via OIDC.",
-        "Prototyped LLM chat/summarization; set up prompt testing, red‑teaming and cost monitoring for responsible use."
-      ],
-    },
-    {
-      company: "SAP Labs",
-      title: "Senior Developer",
-      location: "Bengaluru",
-      start: "Feb 2013",
-      end: "Apr 2021",
-      bullets: [
-        "Led the Onboarding module for SuccessFactors (UI5 → React); owned feature design through delivery across microservices.",
-        "Drove front‑end performance initiatives (bundle splitting, caching) and server‑side optimizations to improve perceived load and stability.",
-        "Established CI/CD to GCP/Azure; migrated services from VMs to Kubernetes with Helm + Terraform; built environment promotion workflows.",
-        "Patent: WYSIWYG slide editor; collaborated on Rundeck/Ansible automations reused by multiple teams."
-      ],
-    },
-    {
-      company: "NetApp India",
-      title: "Web Technologist",
-      location: "Bengaluru",
-      start: "Jan 2008",
-      end: "Feb 2013",
-      bullets: [
-        "Modernized netapp.com (Clickability CMS → modular JS/HTML); improved responsiveness, accessibility and SEO.",
-        "Built deployment pipelines and release automation; integrated CDN caching and image optimization to speed up key pages.",
-        "Implemented early marketing automation—identity, segmentation and journey triggers feeding email campaigns."
-      ],
-    },
-    {
-      company: "Reuters / Thomson Reuters",
-      title: "Software Engineer",
-      location: "Bengaluru",
-      start: "Jan 2005",
-      end: "Feb 2008",
-      bullets: [
-        "Delivered time‑critical editorial tools (Java, C++, JavaScript) used in global newsroom workflows.",
-        "Built real‑time dashboards/alerts; collaborated with operations to meet strict SLAs and release windows.",
-        "Planned and set up on‑prem DC (SAN/NAS, blade servers); introduced a release‑train model; Scrum Master; multiple awards."
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Platform DevOps — GitOps & IaC Baseline",
-      org: "Internal Platform",
-      bullets: [
-        "Standardized GitOps for Kubernetes with Argo CD; declarative apps/environments using the app‑of‑apps pattern.",
-        "Published Terraform modules and remote state backends (S3+DynamoDB/Azure Blob/Terraform Cloud); added policy‑as‑code with OPA/Gatekeeper.",
-        "Created CI/CD templates (GitHub Actions) for build/test/security scanning, SBOM and image signing; progressive delivery and automated rollbacks.",
-        "Rolled out an observability baseline with OpenTelemetry traces/metrics/logs and Grafana‑based dashboards; defined SLOs and tracked DORA metrics."
-      ],
-    },
-    {
-      name: "Cx Support Bot",
-      org: "Degreed",
-      bullets: [
-        "Replaced Zendesk bot with in‑house stack (LangChain backend, Angular frontend, OpenAI).",
-        "Significantly reduced licensing & infra costs; smoother CX routing & answers.",
-      ],
-    },
-    {
-      name: "Vector Ticket Search",
-      org: "Degreed",
-      bullets: [
-        "FAISS‑based NL search across JIRA/Zendesk; summarizes, finds duplicates.",
-        "Production use; inference via llama.cpp/Gemma local models to reduce cost.",
-      ],
-    },
-    {
-      name: "Python Low‑Code Platform",
-      org: "SymphonyAI",
-      bullets: [
-        "Django + OIDC backend; Rapid UI builder (React) to productize DS apps quickly.",
-      ],
-    },
-    {
-      name: "VM & K8s Automations",
-      org: "SAP Labs",
-      bullets: [
-        "Rundeck/Ansible automation; deployments to GCP/Azure; migration from VMs to K8s.",
-      ],
-    },
-  ],
-  education: [
-    { school: "Calcutta University", degree: "Bachelor of Commerce", dates: "1998 – 2001" },
-  ],
-  languages: [
-    { name: "English", level: "Native" },
-    { name: "Hindi", level: "Expert" },
-    { name: "Bengali", level: "Expert" },
-    { name: "Tamil", level: "Proficient" },
-    { name: "Kannada", level: "Conversational" },
-    { name: "Spanish", level: "A1" },
-  ],
-};
-
+const initialData = resumeJson;
 // --- Helpers ----------------------------------------------------------------
 function cls(...arr) { return arr.filter(Boolean).join(" "); }
 
@@ -498,7 +340,9 @@ function mapReactiveResume(json) {
 
 // --- UI ---------------------------------------------------------------------
 export default function ResumeStudio() {
-  const [data, setData] = useState(initialData);
+  const storage = useMemo(() => new LocalStorageStorage(), []);
+  const { resume: data, setResume: setData } = useResume(initialData, storage);
+  const [editorOpen, setEditorOpen] = useState(false);
   const [atsMode, setAtsMode] = useState(true); // single‑column, ATS‑friendly
   const [showBreakControls, setShowBreakControls] = useState(true); // single‑column, black‑white, ATS‑friendly
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -578,6 +422,13 @@ export default function ResumeStudio() {
               <button className="w-full px-3 py-2 rounded-xl border shadow-sm hover:bg-slate-50 text-left" onClick={downloadJSON}>Download JSON</button>
               <button className="w-full px-3 py-2 rounded-xl border shadow-sm hover:bg-slate-50 text-left" onClick={() => fileRef.current?.click()}>Import JSON</button>
               <button className="w-full px-3 py-2 rounded-xl border shadow-sm hover:bg-slate-50 text-left" onClick={() => reactiveRef.current?.click()}>Import ReactiveResume JSON</button>
+              <button
+  className="w-full px-3 py-2 rounded-xl border shadow-sm hover:bg-slate-50 text-left"
+  onClick={() => setEditorOpen(true)}
+>
+  Edit Resume
+</button>
+
             </div>
 
             {showBreakControls && (
@@ -754,6 +605,13 @@ export default function ResumeStudio() {
           </article>
         </div>
       </div>
+    {editorOpen && (
+      <ResumeEditor
+        value={data}
+        onChange={setData}
+        onClose={() => setEditorOpen(false)}
+      />
+    )}
 
       <style>{`
         @page { margin: 1in; }
@@ -790,5 +648,6 @@ export default function ResumeStudio() {
         }
       `}</style>
     </div>
+    
   );
 }
