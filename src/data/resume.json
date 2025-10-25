@@ -28,44 +28,80 @@
     }
   },
   "summary": [
-    "20+ years at SAP Labs, Degreed, and more; architecting and delivering complex, full‑stack solutions.",
-    "AI/LLM integration: built production RAG pipelines, vector search, and chatbots using LangChain and LlamaIndex.",
-    "Models: OpenAI plus locally hosted Llama and Gemma; pragmatic, cost‑aware deployments.",
-    "Cloud & DevOps: architected multi‑cloud (AWS, Azure, GCP) microservices with Kubernetes, Docker, Terraform.",
-    "JavaScript & UI: expert front‑end (React, Angular); U.S. patent for innovative UI design; user‑centric UX."
+    "20+ years at Reuters, NetApp, SAP Labs and more. Hands-on full‑stack enterprise development and system/application design.",
+    "Build cost effective, productionized search application and other automations with open source LLMs. Search tools like FAISS, elastic and search strategies for quick and cost-effective solutions. Proficient with Open Source LLM usage and deployment.",
+    "Cloud & DevOps: Experienced in building and running  data centres and productionizing applications across multiple cloud providers. Created automations, managed deployments and wrote smoke tests. CI/CD Automation implementations.",
+    "JavaScript & UI: Pro Front‑end (Native JS, React, Angular, Node) developer. Have a U.S. patent for innovative UI design in SAP."
   ],
   "skills": [
     {
       "name": "Architecture",
-      "keywords": ["Backend", "Frontend", "Cloud"]
+      "keywords": [
+        "Full stack cloud applications",
+        "DB Designs",
+        "networking"
+      ]
     },
     {
       "name": "Frontend",
-      "keywords": ["React", "Angular", "JavaScript", "HTML/CSS"]
+      "keywords": [
+        "React",
+        "Angular",
+        "JavaScript",
+        "HTML/CSS"
+      ]
     },
     {
       "name": "DevOps",
-      "keywords": ["Azure", "GCP", "Kubernetes", "Docker", "Linux scripting"]
+      "keywords": [
+        "Azure",
+        "GCP",
+        "Kubernetes",
+        "Docker",
+        "Linux expertise"
+      ]
     },
     {
       "name": "AI & RAG",
-      "keywords": ["Vector search", "Graph RAG", "Prompting", "Ollama", "ONNX"]
+      "keywords": [
+        "Vector search",
+        "Graph RAG",
+        "Prompting",
+        "Ollama",
+        "vLLM"
+      ]
     },
     {
       "name": "Node",
-      "keywords": ["Express", "Deno", "Bun"]
+      "keywords": [
+        "Express",
+        "Deno",
+        "Bun"
+      ]
     },
     {
       "name": "Python",
-      "keywords": ["FastAPI", "Django", "Pandas"]
+      "keywords": [
+        "FastAPI",
+        "Django",
+        "Pandas"
+      ]
     },
     {
       "name": ".NET",
-      "keywords": ["ASP.NET", "Blazor"]
+      "keywords": [
+        "ASP.NET",
+        "Blazor"
+      ]
     },
     {
       "name": "Java",
-      "keywords": ["JEE", "POJOs", "Grails", "Kotlin"]
+      "keywords": [
+        "JEE",
+        "POJOs",
+        "Grails",
+        "Kotlin"
+      ]
     }
   ],
   "experience": [
@@ -76,11 +112,7 @@
       "start": "Dec 2023",
       "end": "Present",
       "bullets": [
-        "Architected AI‑driven support automation with vector search + LLMs; reduced duplicate tickets ~30% and triage time ~25%.",
-        "Productionized RAG pipelines over JIRA and Zendesk with LangChain/LlamaIndex; de‑duplication, NLQ for escalations, prompt/guardrail patterns, and an offline evaluation harness.",
-        "Built a multi‑tenant embeddings + retrieval service (OpenAI plus local llama.cpp/Gemma) behind feature flags; optimized token usage and latency for cost‑aware inference.",
-        "Defined SLOs (e.g., P95 first‑response latency, answer confidence) and instrumented the stack with OpenTelemetry; shipped dashboards and alerting for product/ops.",
-        "Contributed to Angular migration and a Design‑System; improved accessibility and page‑load KPIs across key flows."
+        "Architected AI‑driven support automation with vector search + LLMs. Providing APIs to integrate into Zendesk and Jira for customized possible resolutions, Document generation and other support activity automations.\nContributed to Angular migration and Design‑System change. Provided workflow and migration plans.\nCreated the UI for the Webhooks project, with proper styles and code. Contributed to the backend of the project used C#."
       ]
     },
     {
@@ -90,10 +122,7 @@
       "start": "Apr 2021",
       "end": "Nov 2023",
       "bullets": [
-        "Built an internal low‑code platform (Django, React, Redis, K8s) that productized data‑science apps; reduced time‑to‑first‑app from weeks to days.",
-        "Introduced GitOps (Argo CD) and IaC (Terraform modules with remote state) across dev/stage/prod; published golden CI/CD templates (GitHub Actions) with tests, SBOM and image signing; automated rollbacks.",
-        "Designed FastAPI microservices for ingestion/serving; background jobs with Celery; multi‑tenant auth via OIDC.",
-        "Prototyped LLM chat/summarization; set up prompt testing, red‑teaming and cost monitoring for responsible use."
+        "Built an internal low‑code platform (Django, React, Redis, K8s) that productized data‑science apps; reduced time‑to‑first‑app from weeks to days. Encouraging large scale usage by data scientists.\nDesigned FastAPI microservices for ingestion/serving; background jobs with Celery; multi‑tenant auth via OIDC.\nPrototyped LLM chat/summarization and initial testing cycles."
       ]
     },
     {
@@ -103,10 +132,7 @@
       "start": "Feb 2013",
       "end": "Apr 2021",
       "bullets": [
-        "Led the Onboarding module for SuccessFactors (UI5 → React); owned feature design through delivery across microservices.",
-        "Drove front‑end performance initiatives (bundle splitting, caching) and server‑side optimizations to improve perceived load and stability.",
-        "Established CI/CD to GCP/Azure; migrated services from VMs to Kubernetes with Helm + Terraform; built environment promotion workflows.",
-        "Patent: WYSIWYG slide editor; collaborated on Rundeck/Ansible automations reused by multiple teams."
+        "Developed the Onboarding module for SuccessFactors (UI5 ). Initially from a completely different system and tech stack, moved successfully into the module. Later helped the DevOps automate the CI/CD for the module.\nModerized UI code from ES3 to ES5.\nPatent: WYSIWYG slide editor, for non technical managers to create onboarding materials according to standards and simple drag and drop."
       ]
     },
     {
@@ -116,9 +142,7 @@
       "start": "Jan 2008",
       "end": "Feb 2013",
       "bullets": [
-        "Modernized netapp.com (Clickability CMS → modular JS/HTML); improved responsiveness, accessibility and SEO.",
-        "Built deployment pipelines and release automation; integrated CDN caching and image optimization to speed up key pages.",
-        "Implemented early marketing automation—identity, segmentation and journey triggers feeding email campaigns."
+        "Modernized netapp.com (Clickability CMS → modular JS/HTML); improved responsiveness, accessibility and SEO.\nImplemented early marketing automation—identity, segmentation and journey triggers feeding email campaigns."
       ]
     },
     {
@@ -128,51 +152,38 @@
       "start": "Jan 2005",
       "end": "Feb 2008",
       "bullets": [
-        "Delivered time‑critical editorial tools (Java, C++, JavaScript) used in global newsroom workflows.",
-        "Built real‑time dashboards/alerts; collaborated with operations to meet strict SLAs and release windows.",
-        "Planned and set up on‑prem DC (SAN/NAS, blade servers); introduced a release‑train model; Scrum Master; multiple awards."
+        "Delivered time‑critical editorial tools (Java, C++, JavaScript) used in global newsroom workflows.\nPlanned and set up on‑prem DC (SAN/NAS, blade servers), setup processes to maintain data centers.\nWorked on various editorial automation projects such as web grabbing and monitoring sites for changes."
       ]
     }
   ],
   "projects": [
     {
-      "name": "Platform DevOps — GitOps & IaC Baseline",
-      "org": "Internal Platform",
-      "bullets": [
-        "Standardized GitOps for Kubernetes with Argo CD; declarative apps/environments using the app‑of‑apps pattern.",
-        "Published Terraform modules and remote state backends (S3+DynamoDB/Azure Blob/Terraform Cloud); added policy‑as‑code with OPA/Gatekeeper.",
-        "Created CI/CD templates (GitHub Actions) for build/test/security scanning, SBOM and image signing; progressive delivery and automated rollbacks.",
-        "Rolled out an observability baseline with OpenTelemetry traces/metrics/logs and Grafana‑based dashboards; defined SLOs and tracked DORA metrics."
-      ]
-    },
-    {
       "name": "Cx Support Bot",
       "org": "Degreed",
       "bullets": [
-        "Replaced Zendesk bot with in‑house stack (LangChain backend, Angular frontend, OpenAI).",
-        "Significantly reduced licensing & infra costs; smoother CX routing & answers."
+        "Replaced Zendesk bot with in‑house stack (FastAPI backend, Angular frontend, OpenAI). Significantly reducing cost and accuracy of ticket searches and vendor lock-in avoidance. "
       ]
     },
     {
       "name": "Vector Ticket Search",
       "org": "Degreed",
       "bullets": [
-        "FAISS‑based NL search across JIRA/Zendesk; summarizes, finds duplicates.",
-        "Production use; inference via llama.cpp/Gemma local models to reduce cost."
+        "FAISS‑based NL search across JIRA/Zendesk. summarizes, finds duplicates and general graphs of tickets received.",
+        "Inference through OpenAI on Azure and Ollama, based on the different environments for customers. SLM based fine tuning pipeline using axolotl and unsloth. Data preps and transformation pipelines."
       ]
     },
     {
       "name": "Python Low‑Code Platform",
       "org": "SymphonyAI",
       "bullets": [
-        "Django + OIDC backend; Rapid UI builder (React) to productize DS apps quickly."
+        "Django + OIDC backend, rapid UI building using python with in built styling based SAI styling guild lines. Fully python based UI development, using predefined blocks and templates."
       ]
     },
     {
       "name": "VM & K8s Automations",
       "org": "SAP Labs",
       "bullets": [
-        "Rundeck/Ansible automation; deployments to GCP/Azure; migration from VMs to K8s."
+        "Rundeck/Ansible automation to deploy SuccessFactors across clouds. Later helped in the migration of SuccessFactors to K8 clusters."
       ]
     }
   ],

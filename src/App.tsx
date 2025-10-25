@@ -26,33 +26,40 @@ function downloadBlob(blob, filename) {
 // Escape HTML for safe string export
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
 
+// Escape HTML and convert line breaks to <br> tags
+const escWithBreaks = (s) => esc(s).replace(/\n/g, '<br>');
+
 // Render a standalone branded <article> using the current data (no React needed in the export)
 const renderBrandedArticle = (d) => {
-  const header = `
-    <header class="mb-2">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
-        <div>
-          <h1 class="font-bold text-4xl">${esc(d.basics.name)}</h1>
-          <p class="text-sm text-slate-700">${esc(d.basics.headline || '')}</p>
-        </div>
-        <div class="text-sm text-slate-700">
-          <div class="flex gap-x-3 flex-wrap">
-            ${d.basics.email ? `<span>${esc(d.basics.email)}</span>` : ''}
-            ${d.basics.phone ? `<span>${esc(d.basics.phone)}</span>` : ''}
-            ${d.basics.location ? `<span>${esc(d.basics.location)}</span>` : ''}
-            ${d.basics.website ? `<a class="underline" href="${esc(d.basics.website)}" target="_blank">Website</a>` : ''}
-            ${d.basics.profiles?.[0]?.url ? `<a class="underline" href="${esc(d.basics.profiles[0].url)}" target="_blank">LinkedIn</a>` : ''}
-          </div>
-        </div>
+  const header = `<header class="mb-2">
+  <div class="flex flex-col gap-2">
+    <h1 class="font-bold text-4xl">${esc(d.basics.name)}</h1>
+    <p class="text-sm text-slate-700">${esc(d.basics.headline || '')}</p>
+    <div class="text-sm text-slate-700">
+      <div class="flex gap-x-3 flex-wrap">
+        ${d.basics.email ? `<span>${esc(d.basics.email)}</span>` : ''}
+        ${d.basics.phone ? `<span>${esc(d.basics.phone)}</span>` : ''}
+        ${d.basics.location ? `<span>${esc(d.basics.location)}</span>` : ''}
+        ${d.basics.website ? `<a class="underline" href="${esc(d.basics.website)}" target="_blank">Website</a>` : ''}
+        ${d.basics.profiles?.[0]?.url ? `<a class="underline" href="${esc(d.basics.profiles[0].url)}" target="_blank">LinkedIn</a>` : ''}
       </div>
-    </header>`;
+    </div>
+  </div>
+</header>`;
 
-  const list = (items) => items.map((x) => `<li class="ml-4 list-disc text-[0.95rem] leading-relaxed">${esc(x)}</li>`).join('');
+  const list = (items) => {
+    if (items.length === 1) {
+      return `<p class="text-[0.95rem] leading-relaxed text-slate-800">${escWithBreaks(items[0])}</p>`;
+    }
+    return items.map((x) => `<li class="ml-0 list-none text-[0.95rem] leading-relaxed before:content-['*'] before:mr-2 before:text-slate-400">${escWithBreaks(x)}</li>`).join('');
+  };
 
   const summary = d.summary?.length ? `
     <section class="mb-6 break-inside-avoid">
       <h2 class="text-xl font-semibold tracking-tight mb-2">Summary</h2>
-      <ul class="grid gap-1">${list(d.summary)}</ul>
+      <div class="text-[0.95rem] leading-relaxed text-slate-800 space-y-2">
+        ${d.summary.map(s => `<p>${escWithBreaks(s)}</p>`).join('')}
+      </div>
     </section>` : '';
 
   const skills = d.skills?.length ? `
@@ -74,7 +81,9 @@ const renderBrandedArticle = (d) => {
               <h3 class="text-lg font-semibold">${esc(r.title)} — ${esc(r.company)}</h3>
               <div class="text-sm text-slate-700">${esc([r.location, `${r.start} – ${r.end}`].filter(Boolean).join('  •  '))}</div>
             </div>
-            <ul class="mt-1 grid gap-1">${list(r.bullets||[])}</ul>
+            ${(r.bullets||[]).length === 1
+              ? `<div class="mt-1">${list(r.bullets||[])}</div>`
+              : `<ul class="mt-1 grid gap-1">${list(r.bullets||[])}</ul>`}
           </div>
         `).join('')}
       </div>
@@ -87,7 +96,9 @@ const renderBrandedArticle = (d) => {
         ${d.projects.map((p)=>`
           <div>
             <h3 class="font-semibold">${esc(p.name)}${p.org ? ` — ${esc(p.org)}` : ''}</h3>
-            <ul class="mt-1 grid gap-1">${list(p.bullets||[])}</ul>
+            ${(p.bullets||[]).length === 1
+              ? `<div class="mt-1">${list(p.bullets||[])}</div>`
+              : `<ul class="mt-1 grid gap-1">${list(p.bullets||[])}</ul>`}
           </div>
         `).join('')}
       </div>
@@ -138,6 +149,11 @@ const exportBrandedHTML = (d) => {
     @page { margin: 1in; }
     body { background: #fff; color: #0f172a; }
     .page-break { height: 0; border: 0; margin: 0; }
+    li.before\\:content-\\[\\'\*\\'\\]::before {
+      content: '*';
+      margin-right: 0.5rem;
+      color: #94a3b8;
+    }
     @media print {
           /* Hide UI */
           .sidebar, .sidebar * { display: none !important; }
@@ -188,7 +204,7 @@ function Line({ left, right }) {
 }
 
 function Bullet({ children }) {
-  return <li className="ml-4 list-disc text-[0.95rem] leading-relaxed">{children}</li>;
+  return <li className="ml-0 list-none text-[0.95rem] leading-relaxed before:content-['*'] before:mr-2 before:text-slate-400 whitespace-pre-line">{children}</li>;
 }
 
 // --- DOCX generation ---------------------------------------------------------
@@ -217,7 +233,16 @@ const makeDocx = async (data) => {
   // Summary
   if (data.summary?.length) {
     addHeading("Summary", HeadingLevel.HEADING_2, { breakBefore: layout?.breaks?.before?.summary });
-    data.summary.forEach(s => docChildren.push(new Paragraph({ text: s, bullet: { level: 0 } })));
+    data.summary.forEach(s => docChildren.push(new Paragraph({ text: s })));
+  }
+
+  // Skills
+  if (data.skills?.length) {
+    addHeading("Skills", HeadingLevel.HEADING_2, { breakBefore: layout?.breaks?.before?.skills });
+    data.skills.forEach(s => {
+      const line = `${s.name}: ${s.keywords?.join(", ")}`;
+      docChildren.push(new Paragraph({ text: line }));
+    });
   }
 
   // Experience
@@ -232,7 +257,12 @@ const makeDocx = async (data) => {
       }));
       const line = [role.location, `${role.start} – ${role.end}`].filter(Boolean).join("  •  ");
       if (line) docChildren.push(new Paragraph({ text: line }));
-      role.bullets?.forEach(b => docChildren.push(new Paragraph({ text: b, bullet: { level: 0 } })) );
+      // Single bullet: render as plain paragraph. Multiple bullets: use bullet list
+      if (role.bullets?.length === 1) {
+        docChildren.push(new Paragraph({ text: role.bullets[0] }));
+      } else {
+        role.bullets?.forEach(b => docChildren.push(new Paragraph({ text: b, bullet: { level: 0 } })) );
+      }
     });
   }
 
@@ -241,16 +271,12 @@ const makeDocx = async (data) => {
     addHeading("Projects", HeadingLevel.HEADING_2, { breakBefore: layout?.breaks?.before?.projects });
     data.projects.forEach(p => {
       docChildren.push(new Paragraph({ text: `${p.name}${p.org ? ` — ${p.org}` : ""}`, heading: HeadingLevel.HEADING_3 }));
-      p.bullets?.forEach(b => docChildren.push(new Paragraph({ text: b, bullet: { level: 0 } })) );
-    });
-  }
-
-  // Skills
-  if (data.skills?.length) {
-    addHeading("Skills", HeadingLevel.HEADING_2, { breakBefore: layout?.breaks?.before?.skills });
-    data.skills.forEach(s => {
-      const line = `${s.name}: ${s.keywords?.join(", ")}`;
-      docChildren.push(new Paragraph({ text: line }));
+      // Single bullet: render as plain paragraph. Multiple bullets: use bullet list
+      if (p.bullets?.length === 1) {
+        docChildren.push(new Paragraph({ text: p.bullets[0] }));
+      } else {
+        p.bullets?.forEach(b => docChildren.push(new Paragraph({ text: b, bullet: { level: 0 } })) );
+      }
     });
   }
 
@@ -500,7 +526,7 @@ export default function ResumeStudio() {
           )}>
             {/* Header */}
             <header className="mb-2">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
+              <div className="flex flex-col gap-2">
                 <div>
                   <h1 className={cls("font-bold", atsMode ? "text-3xl" : "text-4xl")}>{data.basics.name}</h1>
                   <p className="text-sm text-slate-700">{data.basics.headline}</p>
@@ -518,9 +544,9 @@ export default function ResumeStudio() {
             </header>
 
             <Section title="Summary" beforeBreak={data.layout.breaks.before.summary}>
-              <ul className="grid gap-1">
-                {data.summary.map((s, i) => <Bullet key={i}>{s}</Bullet>)}
-              </ul>
+              <div className="text-[0.95rem] leading-relaxed text-slate-800 space-y-2">
+                {data.summary.map((s, i) => <p key={i} className="whitespace-pre-line">{s}</p>)}
+              </div>
             </Section>
 
             <Section title="Skills" beforeBreak={data.layout.breaks.before.skills}>
@@ -563,9 +589,13 @@ export default function ResumeStudio() {
                       <h3 className="text-lg font-semibold">{r.title} — {r.company}</h3>
                       <div className="text-sm text-slate-700">{[r.location, `${r.start} – ${r.end}`].filter(Boolean).join("  •  ")}</div>
                     </div>
-                    <ul className="mt-1 grid gap-1">
-                      {r.bullets.map((b, j) => <Bullet key={j}>{b}</Bullet>)}
-                    </ul>
+                    {r.bullets.length === 1 ? (
+                      <p className="mt-1 text-[0.95rem] leading-relaxed text-slate-800 whitespace-pre-line">{r.bullets[0]}</p>
+                    ) : (
+                      <ul className="mt-1 grid gap-1">
+                        {r.bullets.map((b, j) => <Bullet key={j}>{b}</Bullet>)}
+                      </ul>
+                    )}
                     {showBreakControls && (<div className="mt-2 pb-controls">
                       <button className="text-xs px-2 py-1 rounded border hover:bg-slate-50" onClick={() => toggleBreakBeforeExperience(i)}>
                         {data.layout.breaks.beforeExperience.includes(i) ? "Remove page break before this role" : "Add page break before this role"}
@@ -581,9 +611,13 @@ export default function ResumeStudio() {
                 {data.projects.map((p, i) => (
                   <div key={i}>
                     <h3 className="font-semibold">{p.name}{p.org ? ` — ${p.org}` : ""}</h3>
-                    <ul className="mt-1 grid gap-1">
-                      {p.bullets.map((b, j) => <Bullet key={j}>{b}</Bullet>)}
-                    </ul>
+                    {p.bullets.length === 1 ? (
+                      <p className="mt-1 text-[0.95rem] leading-relaxed text-slate-800 whitespace-pre-line">{p.bullets[0]}</p>
+                    ) : (
+                      <ul className="mt-1 grid gap-1">
+                        {p.bullets.map((b, j) => <Bullet key={j}>{b}</Bullet>)}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
